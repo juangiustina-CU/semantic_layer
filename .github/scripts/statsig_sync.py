@@ -107,16 +107,6 @@ def sync_file(file_path):
 
     # Additional processing for metric sources
     if 'metric_sources' in file_path:
-        # Uppercase timestampColumn if present
-        if 'timestampColumn' in content:
-            content['timestampColumn'] = content['timestampColumn'].upper()
-        
-        # Uppercase columns in idTypeMapping if present
-        if 'idTypeMapping' in content and isinstance(content['idTypeMapping'], list):
-            for mapping in content['idTypeMapping']:
-                if 'column' in mapping:
-                    mapping['column'] = mapping['column'].upper()
-
         create_or_update_metric_source(content)
     # Processing for metrics
     elif 'metrics' in file_path:
