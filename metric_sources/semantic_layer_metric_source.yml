@@ -11,5 +11,3 @@ timestampAsDay: false
 idTypeMapping:
 - statsigUnitID: userID
   column: customer_id
-- statsigUnitID: deviceID
-  column: created_origin
