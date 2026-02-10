@@ -1,15 +1,15 @@
 ---
-name: Semantic Layer Metric Source
-description: Wow, an updated description!
+name: Orders Source
+description: !
 tags:
-- Support
-- Growth
+- Orders
+- Entity
 - Semantic Layer
-sql: SELECT * FROM shoppy-sales.logging.events
-timestampColumn: ts
+sql: SELECT * FROM cu_dbt_prod.entities_fact.fact_orders
+timestampColumn: order_created_ts
 timestampAsDay: false
 idTypeMapping:
 - statsigUnitID: userID
-  column: user_id
+  column: customer_id
 - statsigUnitID: deviceID
-  column: device_id
+  column: created_origin
