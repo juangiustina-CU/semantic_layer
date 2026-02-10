@@ -1,6 +1,6 @@
 ---
 name: Orders Source
-description: !
+description: Source of Truth for Orders in CU
 tags:
 - Orders
 - Entity
