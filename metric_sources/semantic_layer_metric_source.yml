@@ -11,3 +11,18 @@ timestampAsDay: false
 idTypeMapping:
 - statsigUnitID: userID
   column: customer_id
+
+---
+name: Events Source
+description: Source of Truth for Main Events in CU
+tags:
+- Events
+- Silver Fact
+- Semantic Layer
+sql: SELECT * FROM cu_dbt_prod.silver_fact.fact_events
+timestampColumn: created_ts
+timestampAsDay: false
+idTypeMapping:
+- statsigUnitID: userID
+  column: customer_id
+
