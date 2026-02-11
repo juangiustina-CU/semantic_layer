@@ -83,7 +83,7 @@ sql: |
        and is_customer
        and date_trunc(week, fes.event_date) <= date_trunc(week, current_date)
 timestampColumn: CREATED_TS
-timestampAsDay: false
+timestampAsDay: true
 idTypeMapping:
   - statsigUnitID: userID
     column: CUSTOMER_ID

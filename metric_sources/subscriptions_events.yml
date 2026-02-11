@@ -10,7 +10,7 @@ sql: |
   WHERE 
       subscription_event = 'subscribe'
 timestampColumn: CREATED_TS
-timestampAsDay: false
+timestampAsDay: true
 idTypeMapping:
   - statsigUnitID: userID
     column: CUSTOMER_ID

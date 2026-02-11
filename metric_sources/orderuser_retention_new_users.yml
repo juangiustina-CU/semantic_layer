@@ -39,7 +39,7 @@ sql: |
   )
   select * from fes
 timestampColumn: CREATED_TS
-timestampAsDay: false
+timestampAsDay: true
 idTypeMapping:
   - statsigUnitID: userID
     column: CUSTOMER_ID

@@ -10,7 +10,7 @@ sql: |
   and c.is_customer_order
   left join cu_dbt_prod.entities_fact.fact_order_line_items d on c.order_id = d.order_id and a.product_id = d.product_id
 timestampColumn: CREATED_TS
-timestampAsDay: false
+timestampAsDay: true
 idTypeMapping:
   - statsigUnitID: userID
     column: CUSTOMER_ID

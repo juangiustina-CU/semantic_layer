@@ -14,7 +14,7 @@ sql: |
     left join cu_dbt_prod.bronze_subscriptions.users su on su.user_id = pc.customer_id
     left join cu_dbt_prod.entities_dim.dim_plans dp on pc.plan_id = dp.plan_id
 timestampColumn: CREATED_TS
-timestampAsDay: false
+timestampAsDay: true
 idTypeMapping:
   - statsigUnitID: userID
     column: CUSTOMER_ID

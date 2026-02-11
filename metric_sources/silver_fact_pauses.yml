@@ -11,7 +11,7 @@ sql: |
       EVENT = 'pause'
       AND date_trunc('week', event_date) <= date_trunc('week', current_date())
 timestampColumn: CREATED_TS
-timestampAsDay: false
+timestampAsDay: true
 idTypeMapping:
   - statsigUnitID: userID
     column: CUSTOMER_ID

@@ -10,7 +10,7 @@ sql: |
   WHERE
       NOT IS_CANCELLED AND IS_CHARGED AND IS_AUTOPILOT
 timestampColumn: ORDER_CREATED_TS
-timestampAsDay: false
+timestampAsDay: true
 idTypeMapping:
   - statsigUnitID: userID
     column: CUSTOMER_ID

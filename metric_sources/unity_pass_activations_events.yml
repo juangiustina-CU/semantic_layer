@@ -92,7 +92,7 @@ sql: |
       activations a ON f.customer_id = a.customer_id
       AND f.created_ts >= a.min_converted_date
 timestampColumn: CREATED_TS
-timestampAsDay: false
+timestampAsDay: true
 idTypeMapping:
   - statsigUnitID: userID
     column: CUSTOMER_ID

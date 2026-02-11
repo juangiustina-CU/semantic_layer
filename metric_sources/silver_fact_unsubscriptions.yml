@@ -10,7 +10,7 @@ sql: |
   WHERE
       EVENT_DATE IS NOT NULL AND EVENT = 'unsubscribe'
 timestampColumn: CREATED_TS
-timestampAsDay: false
+timestampAsDay: true
 idTypeMapping:
   - statsigUnitID: userID
     column: CUSTOMER_ID

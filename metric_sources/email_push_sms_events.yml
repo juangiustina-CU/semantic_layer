@@ -36,7 +36,7 @@ sql: |
       select *
       from email_push_sms
 timestampColumn: SENT_TS
-timestampAsDay: false
+timestampAsDay: true
 idTypeMapping:
   - statsigUnitID: userID
     column: CUSTOMER_ID

@@ -36,7 +36,7 @@ sql: |
   )
   select *, case when next_plan is not null then 1 else 0 end as bom_churner from previous_plans
 timestampColumn: CREATED_TS
-timestampAsDay: false
+timestampAsDay: true
 idTypeMapping:
   - statsigUnitID: userID
     column: CUSTOMER_ID
