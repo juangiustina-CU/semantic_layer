@@ -1,10 +1,7 @@
 ---
 name: Products Added to Favorites
 description: "Migrated from Eppo fact: Products Added to Favorites"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   SELECT
       *

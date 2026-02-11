@@ -1,10 +1,7 @@
 ---
 name: All active events - delivery date
 description: "Migrated from Eppo fact: All active events - delivery date"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   select  
           event_id,

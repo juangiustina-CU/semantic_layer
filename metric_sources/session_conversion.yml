@@ -1,10 +1,7 @@
 ---
 name: Session conversion
 description: "Migrated from Eppo fact: Session conversion"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   with orders as (
   select

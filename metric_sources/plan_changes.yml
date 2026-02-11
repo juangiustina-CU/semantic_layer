@@ -1,10 +1,7 @@
 ---
 name: Plan Changes
 description: "Migrated from Eppo fact: Plan Changes"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   with plan_history as (
     select distinct

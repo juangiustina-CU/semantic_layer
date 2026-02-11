@@ -1,10 +1,7 @@
 ---
 name: Menu Conversion
 description: "Migrated from Eppo fact: Menu Conversion"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   select 
       customer_id,

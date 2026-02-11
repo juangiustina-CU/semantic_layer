@@ -1,10 +1,7 @@
 ---
 name: Events Add to Cart - RL
 description: "Migrated from Eppo fact: Events Add to Cart - RL"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   WITH ORDERS AS (
   SELECT

@@ -1,10 +1,7 @@
 ---
 name: Referral Confirmed - New Referee Event
 description: "Migrated from Eppo fact: Referral Confirmed - New Referee Event"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   with referee as (
       select

@@ -1,10 +1,7 @@
 ---
 name: Fact Events
 description: "Migrated from Eppo fact: Fact Events"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   select  
           fes_id,

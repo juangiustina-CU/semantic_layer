@@ -1,10 +1,7 @@
 ---
 name: Products added from Home Surfaces
 description: "Migrated from Eppo fact: Products added from Home Surfaces"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   WITH product_added AS (
   SELECT

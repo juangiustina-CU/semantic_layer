@@ -1,10 +1,7 @@
 ---
 name: Unity Pass Activations Events
 description: "Migrated from Eppo fact: Unity Pass Activations Events"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   with activations as (
   

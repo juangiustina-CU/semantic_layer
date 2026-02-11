@@ -1,10 +1,7 @@
 ---
 name: FES
 description: "Migrated from Eppo fact: FES"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   with next_event_revenue AS (
   

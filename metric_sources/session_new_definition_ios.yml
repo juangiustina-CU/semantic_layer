@@ -1,10 +1,7 @@
 ---
 name: Session (New definition) - iOS
 description: "Migrated from Eppo fact: Session (New definition) - iOS"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   with app_foregrounded as (
   select

@@ -1,10 +1,7 @@
 ---
 name: Food Cost
 description: "Migrated from Eppo fact: Food Cost"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   SELECT
       o.customer_id,

@@ -1,10 +1,7 @@
 ---
 name: SILVER FACT SKIPS
 description: "Migrated from Eppo fact: SILVER FACT SKIPS"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   SELECT
       *

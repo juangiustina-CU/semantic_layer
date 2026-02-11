@@ -1,10 +1,7 @@
 ---
 name: Email & Push & SMS Open
 description: "Migrated from Eppo fact: Email & Push & SMS Open"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   with email_push_sms as (
       select

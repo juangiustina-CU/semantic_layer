@@ -1,10 +1,7 @@
 ---
 name: Search Repetition
 description: "Migrated from Eppo fact: Search Repetition"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   select
       coalesce(ios.customer_id, cus.customer_id) as customer_id,

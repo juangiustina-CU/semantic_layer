@@ -1,10 +1,7 @@
 ---
 name: Events Product Shared - Shoppable Video
 description: "Migrated from Eppo fact: Events Product Shared - Shoppable Video"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   SELECT
       a.* EXCLUDE (customer_id),

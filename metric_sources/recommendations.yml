@@ -1,10 +1,7 @@
 ---
 name: Recommendations
 description: "Migrated from Eppo fact: Recommendations"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   select a.*, b.customer_id, b.event_date, c.is_autopilot as is_order_autopilot, d.product_id is not null as is_ordered_by_recommendation
   from cu_dbt_prod.bronze_subscriptions.product_recommendations a

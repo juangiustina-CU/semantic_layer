@@ -1,10 +1,7 @@
 ---
 name: Search Filter Revamp Event
 description: "Migrated from Eppo fact: Search Filter Revamp Event"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   select
       customer_id,

@@ -1,10 +1,7 @@
 ---
 name: Pauses
 description: "Migrated from Eppo fact: Pauses"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   SELECT
       *

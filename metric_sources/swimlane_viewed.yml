@@ -1,10 +1,7 @@
 ---
 name: Swimlane Viewed
 description: "Migrated from Eppo fact: Swimlane Viewed"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   select
           coalesce(ios.customer_id, cus.customer_id) as customer_id,

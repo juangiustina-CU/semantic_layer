@@ -1,10 +1,7 @@
 ---
 name: Home Visitors
 description: "Migrated from Eppo fact: Home Visitors"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   with ios_visitors as (
   select 

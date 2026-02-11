@@ -1,10 +1,7 @@
 ---
 name: Funnel Metrics
 description: "Migrated from Eppo fact: Funnel Metrics"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   SELECT
       a.*,

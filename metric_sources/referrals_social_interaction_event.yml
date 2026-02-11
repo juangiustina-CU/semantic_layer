@@ -1,10 +1,7 @@
 ---
 name: Referrals - Social Interaction Event
 description: "Migrated from Eppo fact: Referrals - Social Interaction Event"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   with referral as (
       select

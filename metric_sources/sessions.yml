@@ -1,10 +1,7 @@
 ---
 name: Sessions
 description: "Migrated from Eppo fact: Sessions"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   SELECT
       *,

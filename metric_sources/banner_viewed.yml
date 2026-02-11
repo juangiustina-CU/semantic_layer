@@ -1,10 +1,7 @@
 ---
 name: Banner Viewed
 description: "Migrated from Eppo fact: Banner Viewed"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   select
           coalesce(ios.subscriber_id, cus.customer_id) as customer_id,

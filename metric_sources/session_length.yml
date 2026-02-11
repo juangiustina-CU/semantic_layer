@@ -1,10 +1,7 @@
 ---
 name: Session Length
 description: "Migrated from Eppo fact: Session Length"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   select
       customer_id,

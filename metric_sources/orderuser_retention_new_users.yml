@@ -1,10 +1,7 @@
 ---
 name: Order/User Retention - New Users
 description: "Migrated from Eppo fact: Order/User Retention - New Users"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   WITH first_orders AS (
    SELECT customer_id, order_created_ts as activation_ts, delivery_date, order_id

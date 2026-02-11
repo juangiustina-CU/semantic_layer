@@ -1,10 +1,7 @@
 ---
 name: Power User & HVC
 description: "Migrated from Eppo fact: Power User & HVC"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   SELECT
       *

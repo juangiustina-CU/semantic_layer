@@ -1,10 +1,7 @@
 ---
 name: ENTITY FACT ORDERS
 description: "Migrated from Eppo fact: ENTITY FACT ORDERS"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   WITH reco AS (
   SELECT 

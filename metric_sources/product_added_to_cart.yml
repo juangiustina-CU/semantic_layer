@@ -1,10 +1,7 @@
 ---
 name: Product added to cart
 description: "Migrated from Eppo fact: Product added to cart"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   SELECT
       *

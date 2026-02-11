@@ -1,10 +1,7 @@
 ---
 name: Search - Product List Filtered
 description: "Migrated from Eppo fact: Search - Product List Filtered"
-tags:
-  - Eppo
-  - Migrated
-  - Semantic Layer
+tags: []
 sql: |
   select 
   customer_id,
