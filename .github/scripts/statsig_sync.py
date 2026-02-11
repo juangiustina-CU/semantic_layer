@@ -13,12 +13,20 @@ def handle_api_error(response):
         error_json = response.json()
         error_message = error_json.get("message", "An error occurred")
         if "errors" in error_json:
-            for error in error_json["errors"]:
-                error_message += f"\nProperty: {error['property']}, Error: {error['errorMessage']}"
+            errs = error_json["errors"]
+            if isinstance(errs, list):
+                for error in errs:
+                    if isinstance(error, dict):
+                        prop = error.get("property", error.get("field", ""))
+                        msg = error.get("errorMessage", error.get("error", error.get("message", str(error))))
+                        error_message += f"\nProperty: {prop}, Error: {msg}"
+                    else:
+                        error_message += f"\n{error}"
+            else:
+                error_message += f"\n{errs}"
     except ValueError:
-        # If response is not JSON or doesn't have the expected structure
         error_message = response.text or "An error occurred but no additional details were provided."
-    print(f"API Error: {error_message}")
+    print(f"API Error ({response.status_code}): {error_message}")
 
 def encode_metric_id(metric_name):
     return f"{metric_name}::user_warehouse"
