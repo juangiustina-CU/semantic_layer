@@ -1,0 +1,20 @@
+---
+name: SILVER FACT PAUSES
+description: Migrated from Eppo fact: SILVER FACT PAUSES
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      *
+  FROM
+      CU_DBT_PROD.SILVER_FACT.FACT_EVENTS
+  WHERE
+      EVENT = 'pause'
+      AND date_trunc('week', event_date) <= date_trunc('week', current_date())
+timestampColumn: CREATED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

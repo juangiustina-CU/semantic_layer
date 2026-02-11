@@ -1,0 +1,25 @@
+---
+name: iOS Product List Viewed Event
+description: Migrated from Eppo fact: iOS Product List Viewed Event
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      customer_id,
+      delivery_date,
+      device,
+      count(distinct event_id)
+  FROM
+      CU_DBT_PROD.ENTITIES_FACT.FACT_MARKETPLACE_EVENTS
+  WHERE
+      EVENT_NAME IN ('product_list_viewed') AND delivery_date IS NOT NULL
+      AND date_trunc(week, delivery_date) <= date_trunc(week, current_date)
+      AND device ilike '%ios%'
+  GROUP BY ALL
+timestampColumn: DELIVERY_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

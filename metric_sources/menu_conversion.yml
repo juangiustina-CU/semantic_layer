@@ -1,0 +1,22 @@
+---
+name: Menu Conversion
+description: Migrated from Eppo fact: Menu Conversion
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  select 
+      customer_id,
+      delivery_date::date as delivery_date,
+      case when order_id is not null then 1 else 0 end as menu_conversion_order
+  from 
+      cu_dbt_prod.gold_reporting_menu_conversion.overall
+  where 1=1
+  and delivery_date is not null
+  group by all
+timestampColumn: DELIVERY_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

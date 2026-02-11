@@ -1,0 +1,16 @@
+---
+name: Sign Up Started
+description: Migrated from Eppo fact: Sign Up Started
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT * 
+  FROM cu_dbt_prod.entities_fact.fact_user_signup_interactions
+  WHERE event_name in ('funnel - sign up - sign up started')
+timestampColumn: EVENT_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: ANONYMOUS_ID

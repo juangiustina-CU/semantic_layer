@@ -1,0 +1,42 @@
+---
+name: ENTITY FACT ORDERS
+description: Migrated from Eppo fact: ENTITY FACT ORDERS
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  WITH reco AS (
+  SELECT 
+      CUSTOMER_ID,
+      DELIVERY_DATE,
+      COUNT(*) AS PRODUCTS_RECO
+  FROM
+      CU_DBT_PROD.ENTITIES_FACT.FACT_RECOMMENDATIONS
+  GROUP BY 1,2
+      
+  )
+  
+  SELECT
+      fo.*,
+      date_trunc('week', fo.delivery_date) as delivery_week,
+      date_trunc('week', fo.order_created_ts) as order_week,
+      b.is_resurrection,
+      b.primary_channel,
+      datediff(week, order_week, delivery_week) :: string as week_diff_order_delivery,
+      reco.customer_id IS NOT NULL AS has_recommendation
+  FROM 
+      CU_DBT_PROD.ENTITIES_FACT.FACT_ORDERS fo
+  LEFT JOIN
+      CU_DBT_PROD.silver_fact_marketing.fact_subscriptions_channels b 
+  ON fo.customer_id = b.customer_id AND fo.order_id = b.order_created
+  LEFT JOIN
+      reco
+  ON fo.customer_id = reco.customer_id AND fo.delivery_date = reco.delivery_date
+  WHERE 
+      NOT fo.IS_CANCELLED AND fo.IS_CHARGED AND fo.IS_CUSTOMER_ORDER
+timestampColumn: ORDER_CREATED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

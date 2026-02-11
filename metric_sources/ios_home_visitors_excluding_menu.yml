@@ -1,0 +1,58 @@
+---
+name: iOS Home Visitors (Excluding Menu)
+description: Migrated from Eppo fact: iOS Home Visitors (Excluding Menu)
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  with ios_visitors as (
+  select 
+  cus.customer_id,
+  delivery_date,
+  visited_ts,
+  count(*) as ios_visitors_events
+  from cu_dbt_prod.bronze_segment.sdui_service_screens ios
+  left join CU_DBT_PROD.ENTITIES_DIM.DIM_CUSTOMERS cus on ios.magento_customer_id=cus.magento_customer_id
+  group by all
+  
+  union all
+  
+  select 
+  cus.customer_id,
+  delivery_date,
+  sent_ts as visited_ts,
+  count(*) as ios_visitors_events
+  from cu_dbt_prod.bronze_segment.ios_screens ios
+  left join CU_DBT_PROD.ENTITIES_DIM.DIM_CUSTOMERS cus on ios.user_id=cus.magento_customer_id
+  group by all
+  ),
+  menu_visitors as (
+  select
+      customer_id,
+      delivery_date,
+      count(distinct event_id) as q_menu_visits_per_dd
+  from 
+      CU_DBT_PROD.ENTITIES_FACT.FACT_MARKETPLACE_EVENTS
+  where
+      event_name = 'product_list_viewed' and device ilike '%ios%' and delivery_date is not null
+  GROUP BY ALL
+  )
+  select
+          hv.delivery_date,
+          hv.customer_id,
+          max(ios_visitors_events) as max_ios_visitors_events
+  from 
+      ios_visitors hv
+  left join menu_visitors mv
+      on hv.customer_id = mv.customer_id and hv.delivery_date = mv.delivery_date
+  where 
+      hv.delivery_date is not null
+      and mv.customer_id is null
+      and date_trunc(week, hv.delivery_date) <= date_trunc(week, current_date)
+  group by all
+timestampColumn: DELIVERY_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

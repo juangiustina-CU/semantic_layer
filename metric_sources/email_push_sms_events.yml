@@ -1,0 +1,45 @@
+---
+name: Email & Push & SMS Events
+description: Migrated from Eppo fact: Email & Push & SMS Events
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  with email_push_sms as (
+      select
+          customer_id,
+          campaign_name,
+          null as message_variation_name,
+          sent_ts,
+          case when opened_ts is not null then 1 else 0 end as opened
+      from
+          cu_dbt_prod.SILVER_FACT_CRM_EMAIL.FACT_CRM_EMAIL_CONVERSIONS
+      union all
+      select
+          customer_id,
+          campaign_name,
+          message_variation_name,
+          case when sms_push_event ilike '%send%' then event_ts end as sent_ts,
+          case when sms_push_event ilike '%open%' then 1 else 0 end as opened     
+      from
+          cu_dbt_prod.silver_fact_crm.FACT_CRM_SMS_PUSH_EVENTS
+      union all
+      select
+          customer_id,
+          'reco-sms' as campaign_name,
+          null as message_variation_name,
+          reco.created_at_ts as sent_ts,
+          0 as opened
+      from
+          CU_DBT_PROD.BRONZE_SUBSCRIPTIONS.RECOMMENDATIONS_SMS reco
+      left join CU_DBT_PROD.BRONZE_SUBSCRIPTIONS.SMS_LOGS sms on reco.sms_log_id = sms.sms_log_id
+      left join cu_dbt_prod.entities_dim.dim_customers c on sms.user_id = c.magento_customer_id
+      )
+      select *
+      from email_push_sms
+timestampColumn: SENT_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

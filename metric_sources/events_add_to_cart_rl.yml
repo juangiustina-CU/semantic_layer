@@ -1,0 +1,92 @@
+---
+name: Events Add to Cart - RL
+description: Migrated from Eppo fact: Events Add to Cart - RL
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  WITH ORDERS AS (
+  SELECT
+      customer_id,
+      order_created_ts,
+      delivery_date,
+      case when created_origin = 'subscription ios' then 'IOS'
+           when created_origin = 'subscription android' then 'ANDROID'
+           when created_origin = 'recommendation' then 'AUTOPILOT'
+      else 'WEB' end as device,
+      'order' AS event
+  FROM
+      CU_DBT_PROD.ENTITIES_FACT.FACT_ORDERS
+  )
+  
+  , ADDED_TO_CART_EVENTS AS (
+  SELECT
+      a.event_id,
+      a.media_type,
+      a.page_name,
+      a.store_name,
+      a.product_id,
+      a.list_type,
+      a.list_name,
+      a.visited_ts,
+      a.delivery_date,
+      'IOS' AS device,
+      COALESCE(a.customer_id, b.customer_id) AS customer_id
+  FROM
+      CU_DBT_PROD.BRONZE_SEGMENT.IOS_PRODUCT_ADDED a
+  INNER JOIN
+      CU_DBT_PROD.ENTITIES_DIM.DIM_CUSTOMERS b
+  ON a.magento_customer_id = b.magento_customer_id
+  
+  UNION ALL
+  
+  SELECT
+      a.event_id,
+      NULL AS media_type,
+      a.page_name,
+      a.store_name,
+      a.product_id,
+      a.list_type,
+      a.list_name,
+      a.visited_ts,
+      a.delivery_date,
+      'WEB' AS device,
+      COALESCE(a.customer_id, b.customer_id) AS customer_id
+  FROM
+      CU_DBT_PROD.BRONZE_SEGMENT.WEBSITE_PRODUCT_ADDED a
+  INNER JOIN
+      CU_DBT_PROD.ENTITIES_DIM.DIM_CUSTOMERS b
+  ON a.magento_customer_id = b.magento_customer_id
+  
+  UNION ALL
+  
+  SELECT
+      a.event_id,
+      NULL AS media_type,
+      a.page_name,
+      a.store_name,
+      a.product_id,
+      a.list_type,
+      a.list_name,
+      a.visited_ts,
+      a.delivery_date,
+      'ANDROID' AS device,
+      COALESCE(a.customer_id, b.customer_id) AS customer_id
+  FROM
+      CU_DBT_PROD.BRONZE_SEGMENT.ANDROID_PRODUCT_ADDED a
+  INNER JOIN
+      CU_DBT_PROD.ENTITIES_DIM.DIM_CUSTOMERS b
+  ON a.magento_customer_id = b.magento_customer_id
+  
+  )
+  
+  SELECT
+      a.*, b.customer_id IS NOT NULL AS has_ordered
+  FROM ADDED_TO_CART_EVENTS a
+  LEFT JOIN ORDERS b ON a.customer_id = b.customer_id AND a.visited_ts < order_created_ts
+timestampColumn: VISITED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

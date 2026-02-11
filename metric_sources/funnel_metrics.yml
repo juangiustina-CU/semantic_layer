@@ -1,0 +1,26 @@
+---
+name: Funnel Metrics
+description: Migrated from Eppo fact: Funnel Metrics
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      a.*,
+      b.is_meal,
+      not b.is_meal and not b.is_gift as is_addon,
+      not (b.is_meal and not b.is_gift) OR c.product_line_name = 'protein_only' as is_addon_or_protein_only,   
+      b.is_premium,
+      c.product_line_name
+  FROM
+      CU_DBT_PROD.GOLD_CLICKSTREAM.PRODUCT_ADDED_MODEL a
+  LEFT JOIN
+      CU_DBT_PROD.ENTITIES_DIM.DIM_PRODUCTS b ON a.product_id = b.magento_id
+  LEFT JOIN
+      CU_DBT_PROD.ENTITIES_DIM.DIM_PRODUCT_LINES c ON b.product_line_id = c.product_line_id
+timestampColumn: DELIVERY_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

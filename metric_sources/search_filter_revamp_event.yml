@@ -1,0 +1,25 @@
+---
+name: Search Filter Revamp Event
+description: Migrated from Eppo fact: Search Filter Revamp Event
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  select
+      customer_id,
+      delivery_date,
+      device,
+      case when lead(delivery_date, 1) OVER (PARTITION BY customer_id ORDER BY delivery_date) <= dateadd(day, 7, delivery_date)
+              then 1 else 0 end AS next1_search_event
+  from 
+      cu_dbt_prod.entities_fact.fact_marketplace_events
+  where 
+      event_name = 'search_filter_revamp_clicked'
+      and delivery_date is not null
+  group by customer_id, delivery_date, device
+timestampColumn: DELIVERY_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

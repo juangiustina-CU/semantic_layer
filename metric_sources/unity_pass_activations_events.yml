@@ -1,0 +1,101 @@
+---
+name: Unity Pass Activations Events
+description: Migrated from Eppo fact: Unity Pass Activations Events
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  with activations as (
+  
+  select distinct
+      CUSTOMER_ID,
+      first_value(CREATED_TS) over (partition by CUSTOMER_ID order by CREATED_TS) as min_converted_date,
+      first_value(MEMBERSHIP_DISCOUNT_ID) over (partition by CUSTOMER_ID order by CREATED_TS) as converted_discount,
+      first_value(MEMBERSHIP_ID) over (partition by CUSTOMER_ID order by CREATED_TS) as converted_membership,
+      true as converted
+  
+  from CU_DBT_PROD.BRONZE_SUBSCRIPTIONS.MEMBERSHIP_ACTIVATIONS
+  
+  ),
+  fes_events as (
+  select
+          fes.customer_id,
+          fes.store_id,
+          fes.event_id,
+          fes.event_date,
+          date_trunc('week',fes.event_date) as week_date,
+          fes.created_ts,
+          fes.store_name,
+          IFF(fes.is_local, 'local', 'regional') AS delivery_zone,        
+          fes.shipping_days,
+          fes.plan_size,
+          fes.lifespan,
+          fes.lifespan_segment,
+          fes.event,
+          fes.is_autopilot,
+          fes.customer_platform,
+          fes.is_healthy,
+          fes.is_cuisine_innovator,        
+          fes.archetype,
+          fes.moving_5w_order_rate_segments,
+          unsubs.churn_reason_category as churn_reasons,
+          fes.net_revenue,
+          fes.acum_net_revenue,
+          fes.acum_orders,
+          fes.discount,
+          fes.prev1_event,
+          fes.prev1_is_autopilot,
+          fes.next1_event,
+          fes.is_last_first_order,
+          fes.is_resurrected,
+          fes.is_first_order,
+          fes.has_recommendation,
+          fes.order_reviews_qty,
+          fes.order_reviews_sum_rating,
+          fes.order_total_items,
+          fes.order_total_premium_items,
+          fes.is_ios_order,
+          fes.is_android_order,
+          fes.is_web_order,
+          lead(event, 2) over (partition by fes.customer_id order by fes.event_date, fes.created_ts) as next2_event,
+          lead(event, 3) over (partition by fes.customer_id order by fes.event_date, fes.created_ts) as next3_event,
+          lead(event, 7) over (partition by fes.customer_id order by fes.event_date, fes.created_ts) as next7_event,
+          case when event='order' then 1 else 0 end as order_w0,
+          case when event='order' and next1_event='order' then 1 else 0 end as order_retention_w2,
+          case when event='order' and next3_event='order' then 1 else 0 end as order_retention_w4,
+          case when event='order' and next7_event='order' then 1 else 0 end as order_retention_w8,
+          case when next3_event != 'unsubscribe' then 1 else 0 end as user_retention_w4,
+          case when next7_event != 'unsubscribe' then 1 else 0 end as user_retention_w8,
+          case when event='order' and fes.is_autopilot and next1_event = 'unsubscribe' then 1 else 0 end as churn_after_ap,
+          case when event='order' and fes.is_autopilot and (next1_event = 'unsubscribe' or next2_event = 'unsubscribe') then 1 else 0 end as churn_after_ap_2_weeks,
+          case when event='order' and fes.is_autopilot and (next1_event = 'unsubscribe' or next1_event = 'pause' or next1_event = 'skip') then 1 else 0 end as churn_pause_skip_after_ap,
+          case when event='order' and fes.is_autopilot and (next1_event = 'unsubscribe' or next1_event = 'pause' or next1_event = 'skip' or next2_event = 'unsubscribe' or next2_event = 'pause' or next2_event = 'skip') then 1 else 0 end as churn_pause_skip_after_ap_2_weeks
+          
+      from 
+          cu_dbt_prod.silver_fact.fact_events_snapshots fes
+      left join 
+          cu_dbt_prod.silver_fact.fact_unsubscriptions as unsubs
+          on fes.event_id = unsubs.subscription_event_id
+      left join
+          cu_dbt_prod.entities_fact.fact_orders o
+          on fes.event_id = o.order_id and o.is_charged and not o.is_cancelled
+      where 1=1
+       and is_customer
+       and date_trunc(week, fes.event_date) <= date_trunc(week, current_date)
+  )
+  select
+      f.*,
+      a.converted,
+      min_converted_date,
+      converted_membership
+  from
+      fes_events f
+  left join
+      activations a ON f.customer_id = a.customer_id
+      AND f.created_ts >= a.min_converted_date
+timestampColumn: CREATED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

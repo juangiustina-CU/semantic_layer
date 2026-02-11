@@ -1,0 +1,19 @@
+---
+name: Subscriptions Events
+description: Migrated from Eppo fact: Subscriptions Events
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      *
+  FROM 
+      cu_dbt_prod.silver_fact.fact_subscription_events
+  WHERE 
+      subscription_event = 'subscribe'
+timestampColumn: CREATED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

@@ -1,0 +1,19 @@
+---
+name: Gold_Experiments
+description: Migrated from Eppo fact: Gold_Experiments
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      *
+  FROM
+      CU_DBT_PROD.INTERMEDIATE_GOLD_EXPERIMENTS.EXPERIMENTS_METRICS
+  WHERE
+      EXPERIMENT_NAME = 'home - wines test'
+timestampColumn: EVENT_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

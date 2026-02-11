@@ -1,0 +1,19 @@
+---
+name: Product added to cart
+description: Migrated from Eppo fact: Product added to cart
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      *
+  FROM
+      CU_DBT_PROD.GOLD_CLICKSTREAM.PRODUCT_ADDED_MODEL
+  WHERE
+      date_trunc(week, delivery_date) <= date_trunc(week, current_date)
+timestampColumn: DELIVERY_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

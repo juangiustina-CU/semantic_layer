@@ -1,0 +1,21 @@
+---
+name: iOS Manual Orders
+description: Migrated from Eppo fact: iOS Manual Orders
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      *
+  FROM 
+      CU_DBT_PROD.ENTITIES_FACT.FACT_ORDERS
+  WHERE
+      NOT IS_CANCELLED AND IS_CHARGED
+      AND NOT IS_AUTOPILOT
+      AND CREATED_ORIGIN in ('subscription ios')
+timestampColumn: DELIVERY_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

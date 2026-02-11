@@ -1,0 +1,24 @@
+---
+name: Search Repetition
+description: Migrated from Eppo fact: Search Repetition
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  select
+      coalesce(ios.customer_id, cus.customer_id) as customer_id,
+      delivery_date,
+      case when lead(delivery_date, 1) OVER (PARTITION BY coalesce(ios.customer_id, cus.customer_id) ORDER BY delivery_date) <= dateadd(day, 7, delivery_date)
+              then 1 else 0 end AS next1_search_event
+  from 
+      cu_dbt_prod.bronze_segment.ios_search_filter_revamp_clicked ios
+  left join
+      cu_dbt_prod.entities_dim.dim_customers_history cus on ios.magento_customer_id=cus.magento_customer_id
+  where delivery_date is not null
+  group by coalesce(ios.customer_id, cus.customer_id), delivery_date
+timestampColumn: DELIVERY_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

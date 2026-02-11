@@ -1,0 +1,27 @@
+---
+name: Referral Confirmed - New Referee Event
+description: Migrated from Eppo fact: Referral Confirmed - New Referee Event
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  with referee as (
+      select
+          coalesce(try_cast(referral_userid as int), c.customer_id) as customer_id,
+          try_cast(referee_userid as int) as referee_id,
+          timestamp as visited_ts,
+          timestamp::date as visited_date
+          
+      from
+          segment_ingest.subscription_back_app_node_js.referral_new_referee_confirmed a 
+      left join
+         cu_dbt_prod.entities_dim.dim_customers c
+      on try_cast(a.user_id as int) = c.magento_customer_id
+  )
+  select * from referee
+timestampColumn: VISITED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

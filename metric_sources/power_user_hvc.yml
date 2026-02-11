@@ -1,0 +1,16 @@
+---
+name: Power User & HVC
+description: Migrated from Eppo fact: Power User & HVC
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      *
+  FROM CU_DBT_PROD.ENTITIES_FACT.FACT_CUSTOMER_FLAGS_HISTORY
+timestampColumn: VALID_FROM_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

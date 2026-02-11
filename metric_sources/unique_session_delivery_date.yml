@@ -1,0 +1,24 @@
+---
+name: Unique session & delivery_date
+description: Migrated from Eppo fact: Unique session & delivery_date
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      CUSTOMER_ID,
+      SESSION_ID,
+      DELIVERY_DATE,
+      DEVICE,
+      COUNT(*) AS Q_SESSION_DD,
+      MIN(VISITED_TS) AS FIRST_TS
+  FROM
+      CU_DBT_PROD.ENTITIES_FACT.FACT_MARKETPLACE_EVENTS
+  WHERE DELIVERY_DATE IS NOT NULL AND visited_ts >= '{{analysis_start_timestamp}}'
+  GROUP BY CUSTOMER_ID, SESSION_ID, DELIVERY_DATE, DEVICE
+timestampColumn: FIRST_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

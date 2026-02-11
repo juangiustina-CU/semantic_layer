@@ -1,0 +1,24 @@
+---
+name: Search - Product List Filtered
+description: Migrated from Eppo fact: Search - Product List Filtered
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  select 
+  customer_id,
+  device,
+  store_name,
+  sort_name,
+  delivery_date,
+  visited_ts
+  
+  from cu_dbt_prod.entities_fact.fact_marketplace_events
+  where event_name = 'product_list_filtered' 
+  and filter_search is not null
+timestampColumn: VISITED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

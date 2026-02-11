@@ -1,0 +1,48 @@
+---
+name: Order/User Retention - New Users
+description: Migrated from Eppo fact: Order/User Retention - New Users
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  WITH first_orders AS (
+   SELECT customer_id, order_created_ts as activation_ts, delivery_date, order_id
+   FROM cu_dbt_prod.entities_fact.fact_orders
+   WHERE NOT is_cancelled AND is_charged AND is_customer_order
+  qualify row_number() over(partition by customer_id order by order_created_ts) = 1
+  ),
+  fes AS (
+  SELECT a.customer_id, event, event_date AS delivery_date, date_trunc(week, event_date) as delivery_week, created_ts, b.activation_ts, date_trunc(week, b.delivery_date) as activation_delivery_week, FIRST_VALUE(event) OVER(PARTITION BY a.customer_id ORDER BY created_ts) AS first_event,
+   FIRST_VALUE(created_ts) OVER(PARTITION BY a.customer_id ORDER BY created_ts) AS first_event_ts, FIRST_VALUE(event_date) OVER(PARTITION BY a.customer_id ORDER BY event_date) AS first_delivery_date, date_trunc(week, first_delivery_date) as first_delivery_week,
+   case when delivery_week = dateadd(week, 2, activation_delivery_week) and event = 'order' then 1 else 0 end as is_order_retention_w2,
+   case when delivery_week = dateadd(week, 3, activation_delivery_week) and event = 'order' then 1 else 0 end as is_order_retention_w3, 
+   case when delivery_week = dateadd(week, 4, activation_delivery_week) and event = 'order' then 1 else 0 end as is_order_retention_w4,
+   case when delivery_week = dateadd(week, 5, activation_delivery_week) and event = 'order' then 1 else 0 end as is_order_retention_w5,
+   case when delivery_week = dateadd(week, 6, activation_delivery_week) and event = 'order' then 1 else 0 end as is_order_retention_w6,
+   case when delivery_week = dateadd(week, 7, activation_delivery_week) and event = 'order' then 1 else 0 end as is_order_retention_w7,
+   case when delivery_week = dateadd(week, 8, activation_delivery_week) and event = 'order' then 1 else 0 end as is_order_retention_w8,
+   case when delivery_week between dateadd(week, 5, activation_delivery_week) and dateadd(week, 8, activation_delivery_week) and event = 'order' then 1 else 0 end as is_order_retention_m2,
+   -- For order_retention_m2_2plus: unique users who ordered at least 2 times in their month 2
+  case 
+      when sum(case when delivery_week between dateadd(week, 5, activation_delivery_week) and dateadd(week, 8, activation_delivery_week) and event = 'order' then 1 else 0 end) over (partition by a.customer_id) >= 2 
+      then 1 
+      else 0 
+  end as is_order_retention_m2_two_orders,
+   case when delivery_week = dateadd(week, 2, first_delivery_week) then 1 else 0 end as is_user_retention_w2,
+   case when delivery_week = dateadd(week, 3, first_delivery_week) then 1 else 0 end as is_user_retention_w3,
+   case when delivery_week = dateadd(week, 4, first_delivery_week) then 1 else 0 end as is_user_retention_w4,
+   case when delivery_week = dateadd(week, 5, first_delivery_week) then 1 else 0 end as is_user_retention_w5,
+   case when delivery_week = dateadd(week, 6, first_delivery_week) then 1 else 0 end as is_user_retention_w6,
+   case when delivery_week = dateadd(week, 7, first_delivery_week) then 1 else 0 end as is_user_retention_w7,
+   case when delivery_week = dateadd(week, 8, first_delivery_week) then 1 else 0 end as is_user_retention_w8,
+   case when delivery_week between dateadd(week, 5, activation_delivery_week) and dateadd(week, 8, activation_delivery_week) then 1 else 0 end as is_user_retention_m2, 
+  FROM cu_dbt_prod.silver_fact.fact_events_snapshots a
+  left join first_orders b on a.customer_id = b.customer_id
+  )
+  select * from fes
+timestampColumn: CREATED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

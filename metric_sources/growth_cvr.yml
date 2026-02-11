@@ -1,0 +1,21 @@
+---
+name: Growth CVR
+description: Migrated from Eppo fact: Growth CVR
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT 
+              chk.user_id,
+              anonymous_id,
+              original_timestamp
+  FROM SEGMENT_INGEST.SIGNUP_PROD.SIGN_UP_CHECKOUT_COMPLETED chk
+  LEFT JOIN CU_DBT_PROD.ENTITIES_DIM.DIM_CUSTOMERS dc
+  ON try_cast(chk.user_id as int) = dc.magento_customer_id
+  WHERE chk.user_id IS NOT NULL
+timestampColumn: ORIGINAL_TIMESTAMP
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: ANONYMOUS_ID

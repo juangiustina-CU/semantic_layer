@@ -1,0 +1,19 @@
+---
+name: SILVER FACT UNSUBSCRIPTIONS
+description: Migrated from Eppo fact: SILVER FACT UNSUBSCRIPTIONS
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      *
+  FROM 
+      CU_DBT_PROD.SILVER_FACT.FACT_EVENTS_SNAPSHOTS
+  WHERE
+      EVENT_DATE IS NOT NULL AND EVENT = 'unsubscribe'
+timestampColumn: CREATED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

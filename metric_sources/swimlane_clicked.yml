@@ -1,0 +1,19 @@
+---
+name: Swimlane Clicked
+description: Migrated from Eppo fact: Swimlane Clicked
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  select
+          coalesce(ios.customer_id, cus.customer_id) as customer_id,
+          ios.* exclude(customer_id)
+      from 
+          CU_DBT_PROD.BRONZE_SEGMENT.IOS_SWIMLANE_CLICKED ios
+      left join CU_DBT_PROD.ENTITIES_DIM.DIM_CUSTOMERS cus on ios.magento_customer_id=cus.magento_customer_id
+timestampColumn: VISITED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

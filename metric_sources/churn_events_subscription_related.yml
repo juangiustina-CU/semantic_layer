@@ -1,0 +1,19 @@
+---
+name: Churn events subscription related
+description: Migrated from Eppo fact: Churn events subscription related
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      *
+  FROM 
+      CU_DBT_PROD.SILVER_FACT.FACT_UNSUBSCRIPTIONS
+  WHERE
+      event_date IS NOT NULL AND date_trunc('week', event_date) <= date_trunc('week', current_date())
+timestampColumn: EVENT_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

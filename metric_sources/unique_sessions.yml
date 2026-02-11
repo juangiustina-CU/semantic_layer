@@ -1,0 +1,17 @@
+---
+name: Unique sessions
+description: Migrated from Eppo fact: Unique sessions
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      *
+  FROM
+      CU_DBT_PROD.ENTITIES_FACT.FACT_MARKETPLACE_EVENTS
+timestampColumn: VISITED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

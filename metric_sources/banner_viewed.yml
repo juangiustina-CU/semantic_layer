@@ -1,0 +1,19 @@
+---
+name: Banner Viewed
+description: Migrated from Eppo fact: Banner Viewed
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  select
+          coalesce(ios.subscriber_id, cus.customer_id) as customer_id,
+          ios.*
+      from 
+          segment_ingest.ios.banner_viewed ios
+      left join CU_DBT_PROD.ENTITIES_DIM.DIM_CUSTOMERS cus on ios.user_id=cus.magento_customer_id
+timestampColumn: TIMESTAMP
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

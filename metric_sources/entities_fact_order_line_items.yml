@@ -1,0 +1,36 @@
+---
+name: Entities Fact Order Line Items
+description: Migrated from Eppo fact: Entities Fact Order Line Items
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      fo.*,
+      foli.product_id,
+      foli.qty,
+      p.product_line_id,
+      p.category_id,
+      p.is_meal,
+      p.is_premium,
+      NOT p.is_meal and NOT p.is_gift AS is_addon,
+      (NOT p.is_meal and NOT p.is_gift) OR pl.product_line_name = 'protein_only' AS is_addon_or_protein_only
+  FROM 
+      CU_DBT_PROD.ENTITIES_FACT.FACT_ORDERS fo
+  LEFT JOIN
+      CU_DBT_PROD.ENTITIES_FACT.FACT_ORDER_LINE_ITEMS foli
+  ON fo.ORDER_ID = foli.ORDER_ID
+  LEFT JOIN
+      CU_DBT_PROD.ENTITIES_DIM.DIM_PRODUCTS p
+  ON foli.PRODUCT_ID = p.MAGENTO_ID
+  LEFT JOIN
+      CU_DBT_PROD.ENTITIES_DIM.DIM_PRODUCT_LINES pl
+  ON p.product_line_id = pl.product_line_id
+  WHERE 
+      NOT fo.IS_CANCELLED AND fo.IS_CHARGED AND fo.IS_CUSTOMER_ORDER
+timestampColumn: ORDER_CREATED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

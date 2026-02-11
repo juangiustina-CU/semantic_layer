@@ -1,0 +1,83 @@
+---
+name: Session (New definition) - iOS
+description: Migrated from Eppo fact: Session (New definition) - iOS
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  with app_foregrounded as (
+  select
+  c.customer_id,
+  af.user_id,
+  'foregrounded' as event_name,
+  af.timestamp as visited_ts,
+  af.timestamp:: date as visited_date
+  
+  from segment_ingest.ios.application_foregrounded af
+  left join cu_dbt_prod.entities_dim.dim_customers c on af.user_id = c.magento_customer_id
+  ),
+  app_backgrounded as (
+  select
+  c.customer_id,
+  af.user_id,
+  'backgrounded' as event_name,
+  af.timestamp as visited_ts,
+  af.timestamp:: date as visited_date
+  
+  from segment_ingest.ios.application_backgrounded af
+  left join cu_dbt_prod.entities_dim.dim_customers c on af.user_id = c.magento_customer_id
+  ),
+  fore_back as (
+  select
+  * from app_foregrounded
+  union all
+  select
+  * from app_backgrounded
+  ),
+  session_breaks AS (
+      SELECT
+          customer_id,
+          visited_ts,
+          visited_date,
+          event_name,
+      CASE 
+        WHEN event_name = 'foregrounded' AND (
+          LAG(event_name) OVER (PARTITION BY customer_id ORDER BY visited_ts) = 'backgrounded' OR
+          LAG(visited_date) OVER (PARTITION BY customer_id ORDER BY visited_ts) IS DISTINCT FROM visited_date
+        ) THEN 1
+        ELSE 0
+      END AS is_new_session
+      FROM
+          fore_back
+      WHERE
+          visited_date >= '2025-05-15'
+      
+  ),
+  session_numbers AS (
+      SELECT
+          customer_id,
+          visited_ts,
+          visited_date,
+          event_name,
+          SUM(is_new_session) OVER (PARTITION BY customer_id ORDER BY visited_ts) AS session_number
+      FROM
+          session_breaks
+  ),
+  session_id as (
+  select
+      concat(customer_id, visited_date, session_number) as session_id,
+      customer_id,
+      event_name,
+      visited_ts,
+      visited_date,
+      session_number
+  from session_numbers
+  where session_number > 0
+  )
+  select * from session_id
+timestampColumn: VISITED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

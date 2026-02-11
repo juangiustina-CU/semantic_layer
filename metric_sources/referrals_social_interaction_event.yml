@@ -1,0 +1,27 @@
+---
+name: Referrals - Social Interaction Event
+description: Migrated from Eppo fact: Referrals - Social Interaction Event
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  with referral as (
+      select
+          coalesce(try_cast(s.subscriber_id as int), c.customer_id) as customer_id,
+          timestamp as visited_ts,
+          timestamp::date as visited_date
+      from 
+          segment_ingest.cuwebsite.social_interaction_clicked s
+      left join
+         cu_dbt_prod.entities_dim.dim_customers c
+      on try_cast(s.user_id as int) = c.magento_customer_id
+      where trim(lower(device)) = 'mobile web' and trim(lower(device_os)) = 'ios'
+      and sharing_status = 'completed'
+  )
+  select * from referral
+timestampColumn: VISITED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

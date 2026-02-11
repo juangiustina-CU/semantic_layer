@@ -1,0 +1,32 @@
+---
+name: Food Cost
+description: Migrated from Eppo fact: Food Cost
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      o.customer_id,
+      o.delivery_date,
+      count(distinct foli.product_id) as unique_products,
+      sum(pa.cost_nbr) as order_cost
+  
+  FROM
+      CU_DBT_PROD.ENTITIES_FACT.FACT_ORDERS o
+  LEFT JOIN
+      CU_DBT_PROD.ENTITIES_FACT.FACT_ORDER_LINE_ITEMS foli
+  ON o.ORDER_ID = foli.ORDER_ID
+  LEFT JOIN
+      CU_DBT_PROD.SILVER_DIM.DIM_PRODUCT_ATTRIBUTES_V2 pa
+  ON foli.product_id = pa.product_id AND o.store_id = pa.store_id
+  WHERE
+      o.delivery_date IS NOT NULL
+      AND o.is_charged AND NOT o.is_cancelled
+      AND date_trunc(week, o.delivery_date) <= date_trunc(week, current_date)
+  GROUP BY ALL
+timestampColumn: DELIVERY_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

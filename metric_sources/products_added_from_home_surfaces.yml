@@ -1,0 +1,72 @@
+---
+name: Products added from Home Surfaces
+description: Migrated from Eppo fact: Products added from Home Surfaces
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  WITH product_added AS (
+  SELECT
+      try_cast(SUBSCRIBER_ID as INT) as SUBSCRIBER_ID,
+      try_cast(USER_ID as INT) as USER_ID,
+      DEVICE,
+      DELIVERY_DATE,
+      CASE WHEN PRODUCT_TYPE = 'Bundle' THEN TRY_CAST(f.value :: string AS INT)
+      ELSE TRY_CAST(PRODUCT_ID AS INT) END AS PRODUCT_ID,
+      SCREEN_NAME AS SURFACE,
+      TIMESTAMP
+  FROM
+      SEGMENT_INGEST.IOS.PRODUCT_ADDED,
+      LATERAL FLATTEN(INPUT => PARSE_JSON(BUNDLE_MEALS), OUTER => TRUE) f
+  UNION ALL
+  SELECT
+      try_cast(SUBSCRIBER_ID as INT) as SUBSCRIBER_ID,
+      try_cast(USER_ID as INT) as USER_ID,
+      DEVICE,
+      DELIVERY_DATE,
+      CASE WHEN PRODUCT_TYPE = 'Bundle' THEN TRY_CAST(f.value :: string AS INT)
+      ELSE TRY_CAST(PRODUCT_ID AS INT) END AS PRODUCT_ID,
+      SCREEN_NAME AS SURFACE,
+      TIMESTAMP
+  FROM
+      SEGMENT_INGEST.COOKUNITY_ANDROID_PROD.PRODUCT_ADDED,
+      LATERAL FLATTEN(INPUT => PARSE_JSON(BUNDLE_MEALS), OUTER => TRUE) f
+  UNION ALL
+  SELECT
+      try_cast(SUBSCRIBER_ID as INT) as SUBSCRIBER_ID,
+      try_cast(USER_ID as INT) as USER_ID,
+      DEVICE,
+      DELIVERY_DATE,
+      CASE WHEN PRODUCT_TYPE = 'Bundle' THEN TRY_CAST(f.value :: string AS INT)
+      ELSE TRY_CAST(PRODUCT_ID AS INT) END AS PRODUCT_ID,
+      PAGE_NAME AS SURFACE,
+      TIMESTAMP
+  FROM
+      SEGMENT_INGEST.CUWEBSITE.PRODUCT_ADDED,
+      LATERAL FLATTEN(INPUT => PARSE_JSON(BUNDLE_MEALS), OUTER => TRUE) f
+  )
+  SELECT
+      TRIM(LOWER(DEVICE)) AS DEVICE,
+      DELIVERY_DATE :: DATE AS DELIVERY_DATE,
+      PRODUCT_ID,
+      c.PRODUCT_LINE_ID,
+      TRIM(LOWER(SURFACE)) AS SURFACE,
+      TIMESTAMP,
+      COALESCE(a.SUBSCRIBER_ID, b.CUSTOMER_ID) AS CUSTOMER_ID
+  FROM
+      product_added a
+  LEFT JOIN
+      CU_DBT_PROD.ENTITIES_DIM.DIM_CUSTOMERS b
+  ON a.USER_ID = b.magento_customer_id
+  LEFT JOIN 
+      CU_DBT_PROD.ENTITIES_DIM.DIM_PRODUCTS c
+  ON a.PRODUCT_ID = c.MAGENTO_ID
+  WHERE
+      PRODUCT_ID IS NOT NULL
+      AND DATE_TRUNC(WEEK, DELIVERY_DATE) <= DATE_TRUNC(WEEK, CURRENT_DATE)
+timestampColumn: TIMESTAMP
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

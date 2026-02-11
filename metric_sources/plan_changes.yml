@@ -1,0 +1,45 @@
+---
+name: Plan Changes
+description: Migrated from Eppo fact: Plan Changes
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  with plan_history as (
+    select distinct
+        customer_id,
+        pc.created_ts,
+        pc.plan_id,
+        lag(pc.plan_id,1) over (partition by customer_id order by pc.created_ts) as prev_plan,
+        lead(pc.plan_id,1) over (partition by customer_id order by pc.created_ts) as next_plan,
+        timestampdiff('minute',pc.created_ts,lead(pc.created_ts,1) over (partition by customer_id order by pc.created_ts)) as next_plan_ts_diff,
+        status,
+        user_type_id
+    from CU_DBT_PROD.BRONZE_SUBSCRIPTIONS.PLAN_CHANGES pc
+    left join CU_DBT_PROD.BRONZE_SUBSCRIPTIONS.USERS su on su.user_id = pc.customer_id
+  ),
+  previous_plans as (
+    select
+        ph.customer_id,
+        ph.created_ts,
+        ph.prev_plan,
+        dp.plan_title,
+        ph.plan_id as actual_plan,
+        ph.next_plan
+    from plan_history ph
+    left join CU_DBT_PROD.SILVER_DIM.DIM_PLANS dp 
+      on dp.plan_id = ph.prev_plan
+    where 1=1
+      AND ph.plan_id IN (219, 220)
+      and ph.user_type_id = 1
+      and ph.prev_plan != 147
+      and ph.created_ts >= '2025-05-05'
+    qualify row_number() over (partition by ph.customer_id order by ph.created_ts) = 1
+  )
+  select *, case when next_plan is not null then 1 else 0 end as bom_churner from previous_plans
+timestampColumn: CREATED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

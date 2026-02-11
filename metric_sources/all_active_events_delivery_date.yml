@@ -1,0 +1,29 @@
+---
+name: All active events - delivery date
+description: Migrated from Eppo fact: All active events - delivery date
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  select  
+          event_id,
+          customer_id,
+          created_ts,
+          event,
+          event_date,
+          date_trunc(week, event_date) as event_week,
+          date_trunc(week, first_value(event_date) over(partition by customer_id order by event_date)) as first_delivery_week,
+          date_trunc(week, first_value(event_date) over(partition by customer_id order by event_date)) + INTERVAL '2 weeks' as two_weeks_from_first_delivery,
+          date_trunc(week, first_value(event_date) over(partition by customer_id order by event_date)) + INTERVAL '4 weeks' as four_weeks_from_first_delivery,
+          two_weeks_from_first_delivery = date_trunc(week, event_date) as user_retention_w2,
+          four_weeks_from_first_delivery = date_trunc(week, event_date) as user_retention_w4,
+          event = 'order' and two_weeks_from_first_delivery = date_trunc(week, event_date) as order_retention_w2,
+          event = 'order' and four_weeks_from_first_delivery = date_trunc(week, event_date) as order_retention_w4
+  from
+          cu_dbt_prod.silver_fact.fact_events
+timestampColumn: EVENT_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

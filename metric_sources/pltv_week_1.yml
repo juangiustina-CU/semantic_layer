@@ -1,0 +1,31 @@
+---
+name: pLTV (Week = 1)
+description: Migrated from Eppo fact: pLTV (Week = 1)
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT    
+          pltv.customer_id,
+          pltv,
+          CASE
+              WHEN psurv_bucket10_5weeks = 1 THEN 'Highest Churn'
+              WHEN psurv_bucket10_5weeks BETWEEN 2 AND 5 AND pfreq_bucket10_5weeks <= 5 THEN 'High Churn - Low Order'
+              WHEN psurv_bucket10_5weeks BETWEEN 2 AND 5 AND pfreq_bucket10_5weeks > 5 THEN 'High Churn - High Order'
+              WHEN psurv_bucket10_5weeks > 5 AND pfreq_bucket10_5weeks <= 5 THEN 'Low Churn - Low Order'
+              WHEN psurv_bucket10_5weeks > 5 AND pfreq_bucket10_5weeks > 5 THEN 'Low Churn - High Order'
+              ELSE 'Other'
+          END AS pltv_churn_freq_category,
+          dc.created_ts
+      FROM
+          cu_dbt_prod.silver_fact.fact_customer_pltv pltv
+      LEFT JOIN cu_dbt_prod.entities_dim.dim_customers dc
+          ON pltv.customer_id = dc.customer_id
+      WHERE
+          prediction_week = 1
+timestampColumn: CREATED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

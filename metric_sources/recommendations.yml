@@ -1,0 +1,19 @@
+---
+name: Recommendations
+description: Migrated from Eppo fact: Recommendations
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  select a.*, b.customer_id, b.event_date, c.is_autopilot as is_order_autopilot, d.product_id is not null as is_ordered_by_recommendation
+  from cu_dbt_prod.bronze_subscriptions.product_recommendations a
+  inner join cu_dbt_prod.bronze_subscriptions.recommendations b on a.recommendation_id = b.recommendation_id
+  left join cu_dbt_prod.entities_fact.fact_orders c on b.customer_id = c.customer_id and b.event_date = c.delivery_date and not c.is_cancelled and c.is_charged
+  and c.is_customer_order
+  left join cu_dbt_prod.entities_fact.fact_order_line_items d on c.order_id = d.order_id and a.product_id = d.product_id
+timestampColumn: CREATED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

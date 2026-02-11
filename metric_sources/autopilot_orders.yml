@@ -1,0 +1,19 @@
+---
+name: Autopilot orders
+description: Migrated from Eppo fact: Autopilot orders
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      *
+  FROM 
+      CU_DBT_PROD.ENTITIES_FACT.FACT_ORDERS
+  WHERE
+      NOT IS_CANCELLED AND IS_CHARGED AND IS_AUTOPILOT
+timestampColumn: ORDER_CREATED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

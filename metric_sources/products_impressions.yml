@@ -1,0 +1,21 @@
+---
+name: Products Impressions
+description: Migrated from Eppo fact: Products Impressions
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      *
+  FROM
+      CU_DBT_PROD.ENTITIES_FACT.FACT_MARKETPLACE_EVENTS
+  WHERE
+      EVENT_NAME = 'product_tile_seen'
+      AND PRODUCT_ID IS NOT NULL
+      AND DATE_TRUNC(WEEK, DELIVERY_DATE) <= DATE_TRUNC(WEEK, CURRENT_DATE)
+timestampColumn: VISITED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

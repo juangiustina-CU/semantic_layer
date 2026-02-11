@@ -1,0 +1,23 @@
+---
+name: Change Plan
+description: Migrated from Eppo fact: Change Plan
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  select distinct
+        customer_id,
+        pc.created_ts,
+        pc.plan_id,
+        dp.plan_price,  
+        lag(pc.plan_id,1) over (partition by customer_id order by pc.created_ts) as prev_plan,
+        lead(pc.plan_id,1) over (partition by customer_id order by pc.created_ts) as next_plan
+    from cu_dbt_prod.bronze_subscriptions.plan_changes pc
+    left join cu_dbt_prod.bronze_subscriptions.users su on su.user_id = pc.customer_id
+    left join cu_dbt_prod.entities_dim.dim_plans dp on pc.plan_id = dp.plan_id
+timestampColumn: CREATED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

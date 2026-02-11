@@ -1,0 +1,26 @@
+---
+name: Order Events - Delivery Date
+description: Migrated from Eppo fact: Order Events - Delivery Date
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      fo.*,
+      date_trunc('week', fo.delivery_date) as delivery_week,
+      date_trunc('week', fo.order_created_ts) as order_week,
+      b.is_resurrection,
+      b.primary_channel
+  FROM 
+      CU_DBT_PROD.ENTITIES_FACT.FACT_ORDERS fo
+  LEFT JOIN
+      CU_DBT_PROD.silver_fact_marketing.fact_subscriptions_channels b 
+  ON fo.customer_id = b.customer_id AND fo.order_id = b.order_created
+  WHERE 
+      NOT fo.IS_CANCELLED AND fo.IS_CHARGED AND fo.IS_CUSTOMER_ORDER
+timestampColumn: DELIVERY_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

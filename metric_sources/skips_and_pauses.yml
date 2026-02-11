@@ -1,0 +1,19 @@
+---
+name: Skips and Pauses
+description: Migrated from Eppo fact: Skips and Pauses
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      *
+  FROM
+      CU_DBT_PROD.SILVER_FACT.FACT_SKIPS_AND_PAUSES
+  WHERE
+      delivery_date IS NOT NULL AND date_trunc('week', delivery_date) <= date_trunc('week', current_date())
+timestampColumn: DELIVERY_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

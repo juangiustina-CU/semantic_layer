@@ -1,0 +1,84 @@
+---
+name: Session conversion
+description: Migrated from Eppo fact: Session conversion
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  with orders as (
+  select
+  order_created_ts,
+  order_id,
+  customer_id,
+  delivery_date,
+  created_origin
+  from
+      cu_dbt_prod.entities_fact.fact_orders o
+  where
+      o.is_charged and not o.is_cancelled
+  ),
+  sessions_all_devices as (
+  select
+      session_id,
+      customer_id, 
+      case when device in ('mobileweb', 'mobile web') then 'mobile web'
+           when device in ('webdesktop', 'web desktop') then 'web desktop'
+      else device end as device,
+      visited_ts,
+      delivery_date
+  from
+     cu_dbt_prod.entities_fact.fact_marketplace_events 
+  where
+     date(visited_ts) >= '2025-05-01'
+  ),
+  sessions as (
+  select
+      session_id,
+      customer_id,
+      device,
+      MIN(visited_ts) OVER(PARTITION BY CUSTOMER_ID, SESSION_ID, DEVICE) AS first_visited_ts,
+      MAX(visited_ts) OVER(PARTITION BY CUSTOMER_ID, SESSION_ID, DEVICE) AS last_visited_ts,
+      delivery_date
+  from
+      sessions_all_devices
+  ),
+  ios_sessions_group as (
+  select
+      session_id,
+      customer_id,
+      device,
+      first_visited_ts,
+      last_visited_ts,
+      delivery_date
+  from sessions
+  group by all
+  ),
+  session_cvr as (
+  select
+      s.session_id,
+      s.customer_id,
+      s.device,
+      s.first_visited_ts,
+      s.last_visited_ts,
+      round(datediff(second, first_visited_ts, last_visited_ts), 2) as session_duration_seconds,
+      case when session_duration_seconds >= 60 then true else false end as is_meaningful,
+      s.delivery_date,
+      case when c.order_id is not null then 1 else 0 end as conversion,
+      case when c.order_id is not null then c.order_id end as order_id,
+      case when c.order_id is not null then order_created_ts end as order_created_ts,
+      created_origin,
+      case when c.order_id is not null then round(datediff(second, first_visited_ts, order_created_ts), 2) end as time_to_order_seconds,
+      case when c.order_id is not null then row_number() over(partition by order_id order by first_visited_ts) end as order_nro
+  from
+      ios_sessions_group s
+  left join
+      orders c on s.customer_id = c.customer_id and s.delivery_date = c.delivery_date and c.order_created_ts between first_visited_ts and dateadd(minute, 30, last_visited_ts)
+  )
+  select *
+  from session_cvr
+timestampColumn: LAST_VISITED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

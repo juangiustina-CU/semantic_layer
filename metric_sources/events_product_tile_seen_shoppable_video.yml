@@ -1,0 +1,21 @@
+---
+name: Events Product Tile Seen - Shoppable Video
+description: Migrated from Eppo fact: Events Product Tile Seen - Shoppable Video
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      a.* EXCLUDE (customer_id),
+      COALESCE(a.customer_id, b.customer_id) AS customer_id
+  FROM
+      CU_DBT_PROD.BRONZE_SEGMENT.IOS_PRODUCT_TILE_SEEN a
+  LEFT JOIN
+      CU_DBT_PROD.ENTITIES_DIM.DIM_CUSTOMERS b
+  ON a.magento_customer_id = b.magento_customer_id
+timestampColumn: VISITED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

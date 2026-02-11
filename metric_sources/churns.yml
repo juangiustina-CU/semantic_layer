@@ -1,0 +1,19 @@
+---
+name: Churns
+description: Migrated from Eppo fact: Churns
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      *
+  FROM
+      CU_DBT_PROD.SILVER_FACT.FACT_EVENTS_SNAPSHOTS
+  WHERE
+      EVENT IN ('unsubscribe')
+timestampColumn: EVENT_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

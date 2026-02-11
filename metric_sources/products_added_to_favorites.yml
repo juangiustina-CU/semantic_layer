@@ -1,0 +1,21 @@
+---
+name: Products Added to Favorites
+description: Migrated from Eppo fact: Products Added to Favorites
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      *
+  FROM
+      CU_DBT_PROD.ENTITIES_FACT.FACT_MARKETPLACE_EVENTS
+  WHERE
+      EVENT_NAME = 'product_added_to_favorites'
+      AND PRODUCT_ID IS NOT NULL
+      AND DATE_TRUNC(WEEK, DELIVERY_DATE) <= DATE_TRUNC(WEEK, CURRENT_DATE)
+timestampColumn: VISITED_TS
+timestampAsDay: false
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

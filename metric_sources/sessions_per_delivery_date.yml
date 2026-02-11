@@ -1,0 +1,26 @@
+---
+name: Sessions per Delivery Date
+description: Migrated from Eppo fact: Sessions per Delivery Date
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      customer_id,
+      case when device in ('mobileweb', 'mobile web') then 'mobile web'
+           when device in ('webdesktop', 'web desktop') then 'web desktop'
+      else device end as device,
+      delivery_date,
+      count(distinct session_id) as unique_sessions_per_delivery_date
+  FROM
+      CU_DBT_PROD.ENTITIES_FACT.FACT_MARKETPLACE_EVENTS
+  WHERE
+      date(visited_ts) >= '2025-05-01'
+      AND delivery_date is not null
+  GROUP BY ALL
+timestampColumn: DELIVERY_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID

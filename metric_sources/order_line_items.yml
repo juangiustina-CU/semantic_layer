@@ -1,0 +1,28 @@
+---
+name: Order Line Items
+description: Migrated from Eppo fact: Order Line Items
+tags:
+  - Eppo
+  - Migrated
+  - Semantic Layer
+sql: |
+  SELECT
+      o.order_id,
+      o.customer_id,
+      o.delivery_date,
+      o.created_origin,
+      count(distinct foli.product_id) as unique_products
+  FROM
+      CU_DBT_PROD.ENTITIES_FACT.FACT_ORDERS o
+  LEFT JOIN
+      CU_DBT_PROD.ENTITIES_FACT.FACT_ORDER_LINE_ITEMS foli
+  ON o.order_id = foli.order_id
+  WHERE
+      NOT o.IS_CANCELLED AND o.IS_CHARGED
+      AND date_trunc(week, o.delivery_date) <= date_trunc(week, current_date)
+  GROUP BY ALL
+timestampColumn: DELIVERY_DATE
+timestampAsDay: true
+idTypeMapping:
+  - statsigUnitID: userID
+    column: CUSTOMER_ID
