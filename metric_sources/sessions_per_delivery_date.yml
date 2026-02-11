@@ -1,6 +1,6 @@
 ---
 name: Sessions per Delivery Date
-description: Migrated from Eppo fact: Sessions per Delivery Date
+description: "Migrated from Eppo fact: Sessions per Delivery Date"
 tags:
   - Eppo
   - Migrated

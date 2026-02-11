@@ -1,6 +1,6 @@
 ---
 name: Unique sessions
-description: Migrated from Eppo fact: Unique sessions
+description: "Migrated from Eppo fact: Unique sessions"
 tags:
   - Eppo
   - Migrated

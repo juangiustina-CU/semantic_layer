@@ -1,6 +1,6 @@
 ---
 name: Order/User Retention - New Users
-description: Migrated from Eppo fact: Order/User Retention - New Users
+description: "Migrated from Eppo fact: Order/User Retention - New Users"
 tags:
   - Eppo
   - Migrated

@@ -1,6 +1,6 @@
 ---
 name: Order Line Items
-description: Migrated from Eppo fact: Order Line Items
+description: "Migrated from Eppo fact: Order Line Items"
 tags:
   - Eppo
   - Migrated

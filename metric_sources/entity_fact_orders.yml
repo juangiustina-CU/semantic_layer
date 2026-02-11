@@ -1,6 +1,6 @@
 ---
 name: ENTITY FACT ORDERS
-description: Migrated from Eppo fact: ENTITY FACT ORDERS
+description: "Migrated from Eppo fact: ENTITY FACT ORDERS"
 tags:
   - Eppo
   - Migrated

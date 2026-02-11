@@ -1,6 +1,6 @@
 ---
 name: Order Events - Delivery Date
-description: Migrated from Eppo fact: Order Events - Delivery Date
+description: "Migrated from Eppo fact: Order Events - Delivery Date"
 tags:
   - Eppo
   - Migrated

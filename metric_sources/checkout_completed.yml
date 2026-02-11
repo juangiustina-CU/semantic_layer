@@ -1,6 +1,6 @@
 ---
 name: Checkout Completed
-description: Migrated from Eppo fact: Checkout Completed
+description: "Migrated from Eppo fact: Checkout Completed"
 tags:
   - Eppo
   - Migrated

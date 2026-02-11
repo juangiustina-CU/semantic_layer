@@ -1,6 +1,6 @@
 ---
 name: Entities Fact Order Line Items
-description: Migrated from Eppo fact: Entities Fact Order Line Items
+description: "Migrated from Eppo fact: Entities Fact Order Line Items"
 tags:
   - Eppo
   - Migrated

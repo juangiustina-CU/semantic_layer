@@ -1,6 +1,6 @@
 ---
 name: Unique session & delivery_date
-description: Migrated from Eppo fact: Unique session & delivery_date
+description: "Migrated from Eppo fact: Unique session & delivery_date"
 tags:
   - Eppo
   - Migrated

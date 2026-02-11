@@ -1,6 +1,6 @@
 ---
 name: Food Cost
-description: Migrated from Eppo fact: Food Cost
+description: "Migrated from Eppo fact: Food Cost"
 tags:
   - Eppo
   - Migrated

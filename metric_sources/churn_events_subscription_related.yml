@@ -1,6 +1,6 @@
 ---
 name: Churn events subscription related
-description: Migrated from Eppo fact: Churn events subscription related
+description: "Migrated from Eppo fact: Churn events subscription related"
 tags:
   - Eppo
   - Migrated

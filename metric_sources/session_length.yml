@@ -1,6 +1,6 @@
 ---
 name: Session Length
-description: Migrated from Eppo fact: Session Length
+description: "Migrated from Eppo fact: Session Length"
 tags:
   - Eppo
   - Migrated
